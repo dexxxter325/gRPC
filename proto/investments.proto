@@ -2,7 +2,7 @@ syntax="proto3";
 //investments
 
 option go_package ="GRPC/gen";
-service InvestmentService {
+service Investment {
   rpc Create(CreateRequest) returns(CreateResponse);
 }
 

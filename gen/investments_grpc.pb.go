@@ -19,89 +19,89 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	InvestmentService_Create_FullMethodName = "/InvestmentService/Create"
+	Investment_Create_FullMethodName = "/Investment/Create"
 )
 
-// InvestmentServiceClient is the client API for InvestmentService service.
+// InvestmentClient is the client API for Investment service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type InvestmentServiceClient interface {
+type InvestmentClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 }
 
-type investmentServiceClient struct {
+type investmentClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewInvestmentServiceClient(cc grpc.ClientConnInterface) InvestmentServiceClient {
-	return &investmentServiceClient{cc}
+func NewInvestmentClient(cc grpc.ClientConnInterface) InvestmentClient {
+	return &investmentClient{cc}
 }
 
-func (c *investmentServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+func (c *investmentClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
 	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, InvestmentService_Create_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Investment_Create_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// InvestmentServiceServer is the server API for InvestmentService service.
-// All implementations must embed UnimplementedInvestmentServiceServer
+// InvestmentServer is the server API for Investment service.
+// All implementations must embed UnimplementedInvestmentServer
 // for forward compatibility
-type InvestmentServiceServer interface {
+type InvestmentServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	mustEmbedUnimplementedInvestmentServiceServer()
+	mustEmbedUnimplementedInvestmentServer()
 }
 
-// UnimplementedInvestmentServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedInvestmentServiceServer struct {
+// UnimplementedInvestmentServer must be embedded to have forward compatible implementations.
+type UnimplementedInvestmentServer struct {
 }
 
-func (UnimplementedInvestmentServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+func (UnimplementedInvestmentServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedInvestmentServiceServer) mustEmbedUnimplementedInvestmentServiceServer() {}
+func (UnimplementedInvestmentServer) mustEmbedUnimplementedInvestmentServer() {}
 
-// UnsafeInvestmentServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to InvestmentServiceServer will
+// UnsafeInvestmentServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to InvestmentServer will
 // result in compilation errors.
-type UnsafeInvestmentServiceServer interface {
-	mustEmbedUnimplementedInvestmentServiceServer()
+type UnsafeInvestmentServer interface {
+	mustEmbedUnimplementedInvestmentServer()
 }
 
-func RegisterInvestmentServiceServer(s grpc.ServiceRegistrar, srv InvestmentServiceServer) {
-	s.RegisterService(&InvestmentService_ServiceDesc, srv)
+func RegisterInvestmentServer(s grpc.ServiceRegistrar, srv InvestmentServer) {
+	s.RegisterService(&Investment_ServiceDesc, srv)
 }
 
-func _InvestmentService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Investment_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InvestmentServiceServer).Create(ctx, in)
+		return srv.(InvestmentServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InvestmentService_Create_FullMethodName,
+		FullMethod: Investment_Create_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InvestmentServiceServer).Create(ctx, req.(*CreateRequest))
+		return srv.(InvestmentServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// InvestmentService_ServiceDesc is the grpc.ServiceDesc for InvestmentService service.
+// Investment_ServiceDesc is the grpc.ServiceDesc for Investment service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var InvestmentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "InvestmentService",
-	HandlerType: (*InvestmentServiceServer)(nil),
+var Investment_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "Investment",
+	HandlerType: (*InvestmentServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Create",
-			Handler:    _InvestmentService_Create_Handler,
+			Handler:    _Investment_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
