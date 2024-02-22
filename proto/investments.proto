@@ -1,0 +1,18 @@
+syntax="proto3";
+//investments
+
+option go_package ="GRPC/gen";
+service InvestmentService {
+  rpc Create(CreateRequest) returns(CreateResponse);
+}
+
+message CreateRequest{
+  int64 amount=1;
+  string currency=2;
+}
+
+message CreateResponse{
+  int32 investment_id=1;
+  string status=2;
+
+}
