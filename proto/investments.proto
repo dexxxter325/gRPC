@@ -1,18 +1,46 @@
 syntax="proto3";
 //investments
 
-option go_package ="GRPC/gen";
+option go_package ="GRPC/gen";//куда будут сгенерированы файлы
 service Investment {
+  rpc Register(RegisterRequest)returns(RegisterResponse);//like http endpoint(post)
+  rpc Login(LoginRequest)returns(LoginResponse);
   rpc Create(CreateRequest) returns(CreateResponse);
+  rpc Get(GetRequest)returns(GetResponse);
+  rpc Delete(DeleteRequest)returns(DeleteResponse);//(забираем банкноты)
+}
+
+message RegisterRequest{
+  string email=1;
+  string password=2;
+}
+message RegisterResponse{
+  int64 user_id=1;
+}
+
+message LoginRequest{
+  string email=1;
+  string password=2;
+}
+message LoginResponse{
+  string token=1;
 }
 
 message CreateRequest{
+  int64 amount=1;//сумма инвестиции
+  string currency=2;//валюта
+}
+message CreateResponse{
+  int32 investment_id=1;
+}
+
+message GetRequest{}
+message GetResponse{
   int64 amount=1;
   string currency=2;
 }
 
-message CreateResponse{
-  int32 investment_id=1;
-  string status=2;
-
+message DeleteRequest{
+  int64 investment_id=1;
 }
+message DeleteResponse{}

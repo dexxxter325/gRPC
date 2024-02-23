@@ -10,7 +10,7 @@ import (
 )
 
 type InvestmentServer struct {
-	gen.UnimplementedInvestmentServer
+	gen.UnimplementedInvestmentServer //заглушка для сервера-пустая реализация методов интерфейса сервиса
 }
 
 func (s *InvestmentServer) Create(context.Context, *gen.CreateRequest) (*gen.CreateResponse, error) {
