@@ -1,4 +1,4 @@
 .idea
 .bin
 .env
-/config/
+config/config.yml
