@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
 )
 
 func ConnToPostgres(cfg *config.Config) (*pgxpool.Pool, error) {
@@ -13,7 +12,7 @@ func ConnToPostgres(cfg *config.Config) (*pgxpool.Pool, error) {
 		cfg.DB.Postgres.DbName, cfg.DB.Postgres.Password, cfg.DB.Postgres.Sslmode)
 	conn, err := pgxpool.New(context.Background(), data)
 	if err != nil {
-		log.Fatalf("Unable to connect to database:%s", err)
+		return nil, fmt.Errorf("unable to connect to database:%s", err)
 	}
 	return conn, nil
 }

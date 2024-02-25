@@ -4,8 +4,8 @@ import (
 	"GRPC/gen"
 	"GRPC/internal/config"
 	"context"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"log"
 	"net"
 )
 
@@ -20,20 +20,22 @@ func (s *InvestmentServer) Create(context.Context, *gen.CreateRequest) (*gen.Cre
 }
 
 func main() {
+	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 	cfg, err := config.Init()
 	if err != nil {
-		log.Fatalf("config.init failed:%s", err)
+		logrus.Fatalf("config.init failed:%s", err)
 	}
 	//db, err := postgres.ConnToPostgres(cfg)
 	listener, err := net.Listen("tcp", cfg.GRPC.Port)
 	if err != nil {
-		log.Fatalf("listen failed:%s", err)
+		logrus.Fatalf("listen failed:%s", err)
 	}
 	service := &InvestmentServer{}
 	server := grpc.NewServer()
 	gen.RegisterInvestmentServer(server, service)
-	log.Println("server started on port 8000!")
+	logrus.Info("server started on port 8000!")
 	if err = server.Serve(listener); err != nil {
-		log.Fatalf("serve failed:%s", err)
+		logrus.Fatalf("serve failed:%s", err)
 	}
 }
