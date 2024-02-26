@@ -36,7 +36,11 @@ func (s *InvestmentServer) Register(ctx context.Context, req *gen.RegisterReques
 	if req.GetPassword() == "" {
 		return nil, status.Error(codes.InvalidArgument, "password in required")
 	}
-	s.handler.service.Register()
+	userId, err := s.handler.service.Register(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Register failed in handler:%s", err)
+	}
+	return &gen.RegisterResponse{UserId: userId}, nil
 
 }
 
@@ -47,14 +51,39 @@ func (s *InvestmentServer) Login(ctx context.Context, req *gen.LoginRequest) (*g
 	if req.GetPassword() == "" {
 		return nil, status.Error(codes.InvalidArgument, "password in required")
 	}
+	token, err := s.handler.service.Login(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "login failed in handler:%s", err) //internal-сломалось что-то на стороне сервера /,а не клиента
+	}
+	return &gen.LoginResponse{Token: token}, nil
 }
 
 func (s *InvestmentServer) Create(ctx context.Context, req *gen.CreateRequest) (*gen.CreateResponse, error) {
-	panic("implement me")
+	if req.GetCurrency() == "" {
+		return nil, status.Error(codes.InvalidArgument, "currency in required")
+	}
+	if req.GetAmount() == 0 {
+		return nil, status.Error(codes.InvalidArgument, "amount is required")
+	}
+	investmentId, err := s.handler.service.Create(ctx, req.GetAmount(), req.GetCurrency())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "create failed in handler:%s", err)
+	}
+	return &gen.CreateResponse{InvestmentId: investmentId}, nil
 }
-func (s *InvestmentServer) Get(ctx context.Context, request *gen.GetRequest) (*gen.GetResponse, error) {
-	panic("implement me")
+func (s *InvestmentServer) Get(ctx context.Context, req *gen.GetRequest) (*gen.GetResponse, error) {
+	amount, currency, err := s.handler.service.Get(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "get failed in handler:%s", err)
+	}
+	return &gen.GetResponse{
+		Amount:   amount,
+		Currency: currency,
+	}, nil
 }
-func (s *InvestmentServer) Delete(ctx context.Context, request *gen.DeleteRequest) (*gen.DeleteResponse, error) {
-	panic("implement me")
+func (s *InvestmentServer) Delete(ctx context.Context, req *gen.DeleteRequest) (*gen.DeleteResponse, error) {
+	if req.GetInvestmentId() == 0 {
+		return nil, status.Error(codes.InvalidArgument, "investment id is required")
+	}
+	return &gen.DeleteResponse{}, nil
 }

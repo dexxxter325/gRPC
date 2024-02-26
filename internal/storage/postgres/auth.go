@@ -13,7 +13,7 @@ func NewAuthPostgres(db *pgxpool.Pool) *AuthPostgres {
 	return &AuthPostgres{db: db}
 }
 
-func (p *AuthPostgres) Register(ctx context.Context, email, password string) (userId int, err error) {
+func (p *AuthPostgres) Register(ctx context.Context, email, password string) (userId int64, err error) {
 	panic("implement me !")
 }
 

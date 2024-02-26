@@ -32,7 +32,7 @@ message CreateRequest{
   string currency=2;//валюта
 }
 message CreateResponse{
-  int32 investment_id=1;
+  int64 investment_id=1;
 }
 
 message GetRequest{}

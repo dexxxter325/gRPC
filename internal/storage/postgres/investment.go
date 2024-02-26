@@ -13,7 +13,7 @@ func NewInvestmentPostgres(db *pgxpool.Pool) *InvestmentPostgres {
 	return &InvestmentPostgres{db: db}
 }
 
-func (p *InvestmentPostgres) Create(ctx context.Context, amount int64, currency string) (investmentId int, err error) {
+func (p *InvestmentPostgres) Create(ctx context.Context, amount int64, currency string) (investmentId int64, err error) {
 	panic("implement me ")
 }
 
@@ -21,6 +21,6 @@ func (p *InvestmentPostgres) Get(ctx context.Context) (amount int64, currency st
 	panic("implement me ")
 }
 
-func (p *InvestmentPostgres) Delete(ctx context.Context, investmentId int) error {
+func (p *InvestmentPostgres) Delete(ctx context.Context, investmentId int64) error {
 	panic("implement me ")
 }
