@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"GRPC/gen"
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -14,14 +13,14 @@ func NewInvestmentPostgres(db *pgxpool.Pool) *InvestmentPostgres {
 	return &InvestmentPostgres{db: db}
 }
 
-func (p *InvestmentPostgres) Create(ctx context.Context, req *gen.CreateRequest) (*gen.CreateResponse, error) {
+func (p *InvestmentPostgres) Create(ctx context.Context, amount int64, currency string) (investmentId int, err error) {
 	panic("implement me ")
 }
 
-func (p *InvestmentPostgres) Get(ctx context.Context, request *gen.GetRequest) (*gen.GetResponse, error) {
+func (p *InvestmentPostgres) Get(ctx context.Context) (amount int64, currency string, err error) {
 	panic("implement me ")
 }
 
-func (p *InvestmentPostgres) Delete(ctx context.Context, request *gen.DeleteRequest) (*gen.DeleteResponse, error) {
+func (p *InvestmentPostgres) Delete(ctx context.Context, investmentId int) error {
 	panic("implement me ")
 }

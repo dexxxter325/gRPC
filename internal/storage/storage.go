@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"GRPC/gen"
 	"GRPC/internal/storage/postgres"
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,12 +19,12 @@ func NewStorage(db *pgxpool.Pool) *Storage {
 }
 
 type Auth interface {
-	Register(ctx context.Context, req *gen.RegisterRequest) (*gen.RegisterResponse, error)
-	Login(ctx context.Context, req *gen.LoginRequest) (*gen.LoginResponse, error)
+	Register(ctx context.Context, email, password string) (userId int, err error)
+	Login(ctx context.Context, email, password string) (token string, err error)
 }
 
 type Investment interface {
-	Create(ctx context.Context, req *gen.CreateRequest) (*gen.CreateResponse, error)
-	Get(ctx context.Context, request *gen.GetRequest) (*gen.GetResponse, error)
-	Delete(ctx context.Context, request *gen.DeleteRequest) (*gen.DeleteResponse, error)
+	Create(ctx context.Context, amount int64, currency string) (investmentId int, err error)
+	Get(ctx context.Context) (amount int64, currency string, err error)
+	Delete(ctx context.Context, investmentId int) error
 }
