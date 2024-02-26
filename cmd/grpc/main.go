@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	logger := logrus.New()
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
@@ -23,7 +24,7 @@ func main() {
 
 	db, err := postgres.ConnToPostgres(cfg)
 	storages := storage.NewStorage(db)
-	services := service.NewService(storages)
+	services := service.NewService(storages, logger)
 	handlers := handler.NewHandler(services)
 
 	registrar := handler.NewInvestmentServer(handlers)

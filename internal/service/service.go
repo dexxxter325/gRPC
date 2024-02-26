@@ -1,8 +1,10 @@
 package service
 
 import (
+	"GRPC/internal/domain/models"
 	"GRPC/internal/storage"
 	"context"
+	"github.com/sirupsen/logrus"
 )
 
 type Service struct {
@@ -10,10 +12,10 @@ type Service struct {
 	Investment
 }
 
-func NewService(storage *storage.Storage) *Service {
+func NewService(storage *storage.Storage, logger *logrus.Logger) *Service {
 	return &Service{
-		Auth:       NewAuthService(storage.Auth),
-		Investment: NewInvestmentService(storage.Investment),
+		Auth:       NewAuthService(storage.User, logger),
+		Investment: NewInvestmentService(storage.Investment, logger),
 	}
 }
 
@@ -24,6 +26,6 @@ type Auth interface {
 
 type Investment interface {
 	Create(ctx context.Context, amount int64, currency string) (investmentId int64, err error)
-	Get(ctx context.Context) (amount int64, currency string, err error)
+	Get(ctx context.Context) (investment models.Investment, err error)
 	Delete(ctx context.Context, investmentId int64) error
 }

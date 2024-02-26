@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"GRPC/internal/domain/models"
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -17,7 +18,7 @@ func (p *InvestmentPostgres) Create(ctx context.Context, amount int64, currency 
 	panic("implement me ")
 }
 
-func (p *InvestmentPostgres) Get(ctx context.Context) (amount int64, currency string, err error) {
+func (p *InvestmentPostgres) Get(ctx context.Context) (investment models.Investment, err error) {
 	panic("implement me ")
 }
 

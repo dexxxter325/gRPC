@@ -1,30 +1,31 @@
 package storage
 
 import (
+	"GRPC/internal/domain/models"
 	"GRPC/internal/storage/postgres"
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Storage struct {
-	Auth
+	User
 	Investment
 }
 
 func NewStorage(db *pgxpool.Pool) *Storage {
 	return &Storage{
-		Auth:       postgres.NewAuthPostgres(db),
+		User:       postgres.NewUserPostgres(db),
 		Investment: postgres.NewInvestmentPostgres(db),
 	}
 }
 
-type Auth interface {
-	Register(ctx context.Context, email, password string) (userId int64, err error)
-	Login(ctx context.Context, email, password string) (token string, err error)
+type User interface {
+	SaveUser(ctx context.Context, email string, hashedPassword []byte) (userId int64, err error)
+	GetUserByEmail(ctx context.Context, email string) (user models.User, err error)
 }
 
 type Investment interface {
 	Create(ctx context.Context, amount int64, currency string) (investmentId int64, err error)
-	Get(ctx context.Context) (amount int64, currency string, err error)
+	Get(ctx context.Context) (investment models.Investment, err error)
 	Delete(ctx context.Context, investmentId int64) error
 }
