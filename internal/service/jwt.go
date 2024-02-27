@@ -20,18 +20,14 @@ func GenerateNewAccessToken(user models.User, accessTokenTTL time.Duration, secr
 	return accessTokenString, nil
 }
 
-func ParseAccessToken(accessToken string) {
-
+func ParseAccessToken(accessToken string) (bool, error) {
+	panic("скорей всего будем юзать в middleware")
 }
 
-func GenerateNewRefreshToken() {
-
+func GenerateNewRefreshToken() (refreshToken string, err error) {
+	panic("imppppp me")
 }
 
-func ParseRefreshToken(refreshToken string) {
-
-}
-
-func GenerateNewTokenPair(refreshToken string) {
-
+func ParseRefreshToken(refreshToken string) (bool, error) {
+	panic("скорей всего будем юзать в middleware")
 }

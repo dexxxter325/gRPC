@@ -46,7 +46,7 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (use
 	return userId, nil
 
 }
-func (s *AuthService) Login(ctx context.Context, email, password string) (token string, err error) {
+func (s *AuthService) Login(ctx context.Context, email, password string) (accessToken, refreshToken string, err error) {
 	log := s.logger.WithFields(logrus.Fields{
 		"email":    email,
 		"password": password,
@@ -56,19 +56,28 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (token 
 	user, err := s.storage.GetUserByEmail(ctx, email)
 	if err != nil {
 		log.Error("failed to getUser")
-		return "", err
+		return "", "", err
 	}
 	if err = bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
 		log.Error("password wrong")
-		return "", err
+		return "", "", err
 	}
 	secretKey := os.Getenv("SECRETKEY")
-	token, err = GenerateNewAccessToken(user, accessTokenTTL, secretKey)
+	accessToken, err = GenerateNewAccessToken(user, accessTokenTTL, secretKey)
 	if err != nil {
 		log.Errorf("failed in GenerateNewAccessToken:%s", err)
-		return "", err
+		return "", "", err
+	}
+	refreshToken, err = GenerateNewRefreshToken()
+	if err != nil {
+		log.Errorf("failed in GenerateNewRefreshToken:%s", err)
+		return "", "", err
 	}
 
 	log.Info("user logged in")
-	return token, nil
+	return accessToken, refreshToken, nil
+}
+
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (NewAccessToken, NewRefreshToken string, err error) {
+	panic("impl. me")
 }

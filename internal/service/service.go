@@ -21,7 +21,8 @@ func NewService(storage *storage.Storage, logger *logrus.Logger) *Service {
 
 type Auth interface {
 	Register(ctx context.Context, email, password string) (userId int64, err error)
-	Login(ctx context.Context, email, password string) (token string, err error)
+	Login(ctx context.Context, email, password string) (accessToken, refreshToken string, err error)
+	RefreshToken(ctx context.Context, refreshToken string) (NewAccessToken, NewRefreshToken string, err error)
 }
 
 type Investment interface {

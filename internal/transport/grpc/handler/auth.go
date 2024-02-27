@@ -27,17 +27,27 @@ func (s *AuthServer) Login(ctx context.Context, req *gen.LoginRequest) (*gen.Log
 		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
 	if req.GetPassword() == "" {
-		return nil, status.Error(codes.InvalidArgument, "password in required")
+		return nil, status.Error(codes.InvalidArgument, "password is required")
 	}
-	accessToken, err := s.handler.service.Login(ctx, req.GetEmail(), req.GetPassword())
+	accessToken, refreshToken, err := s.handler.service.Login(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "login failed in handler:%s", err) //internal-сломалось что-то на стороне сервера /,а не клиента
 	}
 	return &gen.LoginResponse{
 		AccessToken:  accessToken,
-		RefreshToken: "refresh",
+		RefreshToken: refreshToken,
 	}, nil
 }
 func (s *AuthServer) RefreshToken(ctx context.Context, req *gen.RefreshTokenRequest) (*gen.RefreshTokenResponse, error) {
-	panic("imp me!")
+	if req.GetRefreshToken() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "refresh token is required")
+	}
+	accessToken, refreshToken, err := s.handler.service.RefreshToken(ctx, req.GetRefreshToken())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "refresh token logical failed in handler:%s", err)
+	}
+	return &gen.RefreshTokenResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }
