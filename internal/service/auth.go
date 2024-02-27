@@ -65,7 +65,8 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (token 
 	secretKey := os.Getenv("SECRETKEY")
 	token, err = GenerateNewAccessToken(user, accessTokenTTL, secretKey)
 	if err != nil {
-		log.Error("failed in GenerateNewAccessToken:%s", err)
+		log.Errorf("failed in GenerateNewAccessToken:%s", err)
+		return "", err
 	}
 
 	log.Info("user logged in")

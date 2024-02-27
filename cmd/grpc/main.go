@@ -27,9 +27,13 @@ func main() {
 	services := service.NewService(storages, logger)
 	handlers := handler.NewHandler(services)
 
-	registrar := handler.NewInvestmentServer(handlers)
 	server := grpc.NewServer()
-	gen.RegisterInvestmentServer(server, registrar)
+
+	investmentRegistrar := handler.NewInvestmentServer(handlers)
+	gen.RegisterInvestmentServer(server, investmentRegistrar)
+
+	authRegistrar := handler.NewAuthServer(handlers)
+	gen.RegisterAuthServer(server, authRegistrar)
 
 	listener, err := net.Listen("tcp", cfg.GRPC.Port)
 	if err != nil {

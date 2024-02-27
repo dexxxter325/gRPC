@@ -8,7 +8,7 @@ import (
 )
 
 func GenerateNewAccessToken(user models.User, accessTokenTTL time.Duration, secretKey string) (string, error) {
-	accessToken := jwt.New(jwt.SigningMethodES256)
+	accessToken := jwt.New(jwt.SigningMethodHS256)
 	claims := accessToken.Claims.(jwt.MapClaims)
 	claims["userId"] = user.ID
 	claims["email"] = user.Email
