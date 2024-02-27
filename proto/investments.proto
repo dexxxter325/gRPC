@@ -36,12 +36,17 @@ message CreateResponse{
 }
 
 message GetRequest{}
-message GetResponse{
-  int64 amount=1;
-  string currency=2;
+message GetResponse {
+  repeated Investments investment = 1;
 }
 
 message DeleteRequest{
   int64 investment_id=1;
 }
 message DeleteResponse{}
+
+message Investments {//for return in get
+  int64 ID = 1;
+  int64 Amount = 2;
+  string Currency = 3;
+}

@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	GRPC GRPC `mapstructure:"GRPC"`
-	DB   DB   `mapstructure:"db"`
+	GRPC GRPC
+	DB   DB
 }
 
 type GRPC struct {
@@ -31,7 +31,7 @@ func Init() (*Config, error) {
 	var cfg Config
 
 	// Указываем имя файла конфигурации
-	viper.SetConfigFile("config.yaml")
+	viper.SetConfigFile("config/config.yml")
 
 	// Читаем конфигурационный файл
 	if err := viper.ReadInConfig(); err != nil {

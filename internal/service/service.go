@@ -26,6 +26,6 @@ type Auth interface {
 
 type Investment interface {
 	Create(ctx context.Context, amount int64, currency string) (investmentId int64, err error)
-	Get(ctx context.Context) (investment models.Investment, err error)
+	Get(ctx context.Context) (investment []models.Investment, err error)
 	Delete(ctx context.Context, investmentId int64) error
 }

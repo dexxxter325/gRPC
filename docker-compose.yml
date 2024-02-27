@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  grpc:
+    build: ./
+    ports:
+    - "8000:8000"
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+  db:
+    volumes:
+      - C:/Users/prsok/volumes/databases/postgresql/grpc:/var/lib/postgresql/data
+    image:
+      postgres:16.2
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+    - "5430:5432"
+
+
+

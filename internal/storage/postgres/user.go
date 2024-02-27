@@ -18,7 +18,7 @@ func NewUserPostgres(db *pgxpool.Pool) *UserPostgres {
 }
 
 func (p *UserPostgres) SaveUser(ctx context.Context, email string, hashedPassword []byte) (userId int64, err error) {
-	query := `insert into users(email,password) values $1,$2,$3 returning id`
+	query := `insert into users(email,password) values ($1,$2) returning id`
 	row := p.db.QueryRow(ctx, query, email, hashedPassword)
 	if err = row.Scan(&userId); err != nil {
 		return 0, fmt.Errorf("scan failed in SaveUser:%s", err)

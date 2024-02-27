@@ -72,18 +72,26 @@ func (s *InvestmentServer) Create(ctx context.Context, req *gen.CreateRequest) (
 	return &gen.CreateResponse{InvestmentId: investmentId}, nil
 }
 func (s *InvestmentServer) Get(ctx context.Context, req *gen.GetRequest) (*gen.GetResponse, error) {
-	amount, currency, err := s.handler.service.Get(ctx)
+	investment, err := s.handler.service.Get(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "get failed in handler:%s", err)
 	}
-	return &gen.GetResponse{
-		Amount:   amount,
-		Currency: currency,
-	}, nil
+	var protoInvestment []*gen.Investments
+	for _, investments := range investment {
+		protoInvestment = append(protoInvestment, &gen.Investments{
+			ID:       investments.ID,
+			Amount:   investments.Amount,
+			Currency: investments.Currency,
+		})
+	}
+	return &gen.GetResponse{Investment: protoInvestment}, nil
 }
 func (s *InvestmentServer) Delete(ctx context.Context, req *gen.DeleteRequest) (*gen.DeleteResponse, error) {
 	if req.GetInvestmentId() == 0 {
 		return nil, status.Error(codes.InvalidArgument, "investment id is required")
+	}
+	if err := s.handler.service.Delete(ctx, req.GetInvestmentId()); err != nil {
+		return nil, status.Errorf(codes.Internal, "delete failed in handler:%s", err)
 	}
 	return &gen.DeleteResponse{}, nil
 }

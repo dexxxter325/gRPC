@@ -16,7 +16,7 @@ func NewInvestmentPostgres(db *pgxpool.Pool) *InvestmentPostgres {
 }
 
 func (p *InvestmentPostgres) Create(ctx context.Context, amount int64, currency string) (investmentId int64, err error) {
-	query := `insert into investments(amount,currency) values $1,$2 returning id`
+	query := `insert into investments(amount,currency) values ($1,$2) returning id`
 	row := p.db.QueryRow(ctx, query, amount, currency)
 	if err = row.Scan(&investmentId); err != nil {
 		return 0, fmt.Errorf("scan failed in create:%s", err)

@@ -33,13 +33,13 @@ func (s *InvestmentService) Create(ctx context.Context, amount int64, currency s
 	return investmentId, nil
 }
 
-func (s *InvestmentService) Get(ctx context.Context) (investment models.Investment, err error) {
+func (s *InvestmentService) Get(ctx context.Context) (investment []models.Investment, err error) {
 	s.logger.Info("received get req")
 
 	investment, err = s.storage.Get(ctx)
 	if err != nil {
 		s.logger.Error("get failed")
-		return models.Investment{}, err
+		return investment, err
 	}
 
 	s.logger.Info("investment got")
