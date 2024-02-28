@@ -22,6 +22,7 @@ func NewStorage(db *pgxpool.Pool) *Storage {
 type User interface {
 	SaveUser(ctx context.Context, email string, hashedPassword []byte) (userId int64, err error)
 	GetUserByEmail(ctx context.Context, email string) (user models.User, err error)
+	GetUserById(ctx context.Context, id int64) (user models.User, err error)
 }
 
 type Investment interface {

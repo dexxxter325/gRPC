@@ -79,7 +79,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (access
 		log.Error("convert refreshTokenTTL to type time failed")
 		return "", "", err
 	}
-	refreshToken, err = GenerateNewRefreshToken(refreshTokenTTL, secretKey)
+	refreshToken, err = GenerateNewRefreshToken(user.ID, refreshTokenTTL, secretKey)
 	if err != nil {
 		log.Errorf("failed in GenerateNewRefreshToken:%s", err)
 		return "", "", err
@@ -90,5 +90,47 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (access
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (NewAccessToken, NewRefreshToken string, err error) {
-	panic("impl. me")
+	log := s.logger.WithField("refreshToken", refreshToken)
+	log.Info("Received RefreshToken request")
+
+	secretKey := s.cfg.AUTH.SecretKey
+
+	userId, err := ParseRefreshToken(refreshToken, secretKey)
+	if err != nil {
+		log.Errorf("parse Refresh Token failed:%s", err)
+		return "", "", err
+	}
+
+	user, err := s.storage.GetUserById(ctx, userId)
+	if err != nil {
+		log.Errorf("Get user by id failed:%s", err)
+		return "", "", err
+	}
+
+	accessTokenTTLStr := s.cfg.AUTH.AccessTokenTTl
+	accessTokenTTL, err := time.ParseDuration(accessTokenTTLStr)
+	if err != nil {
+		log.Errorf("parse accessTOkenTTL to type time failed:%s", err)
+		return "", "", nil
+	}
+	NewAccessToken, err = GenerateNewAccessToken(user, accessTokenTTL, secretKey)
+	if err != nil {
+		log.Errorf("generateNewTokenPair failed:%s", err)
+		return "", "", err
+	}
+
+	refreshTTLStr := s.cfg.AUTH.RefreshTokenTTl
+	refreshTokenTTL, err := time.ParseDuration(refreshTTLStr)
+	if err != nil {
+		log.Errorf("parse accessTOkenTTL to type time failed:%s", err)
+		return "", "", nil
+	}
+	NewRefreshToken, err = GenerateNewRefreshToken(user.ID, refreshTokenTTL, secretKey)
+	if err != nil {
+		log.Errorf("generateNewTokenPair failed:%s", err)
+		return "", "", err
+	}
+
+	log.Info("tokens generated")
+	return NewAccessToken, NewRefreshToken, err
 }

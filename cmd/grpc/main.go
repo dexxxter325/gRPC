@@ -27,7 +27,7 @@ func main() {
 	services := service.NewService(storages, logger, cfg)
 	handlers := handler.NewHandler(services)
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(handler.UnaryInterceptor(cfg)))
 
 	investmentRegistrar := handler.NewInvestmentServer(handlers)
 	gen.RegisterInvestmentServer(server, investmentRegistrar)

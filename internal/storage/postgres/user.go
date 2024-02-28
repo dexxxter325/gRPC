@@ -35,7 +35,16 @@ func (p *UserPostgres) GetUserByEmail(ctx context.Context, email string) (user m
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.User{}, fmt.Errorf("user not found with email: %s", email)
 		}
-		return models.User{}, fmt.Errorf("scan failed in getuser:%s", err)
+		return models.User{}, fmt.Errorf("scan failed in getuserByEmail:%s", err)
+	}
+	return user, nil
+}
+
+func (p *UserPostgres) GetUserById(ctx context.Context, id int64) (user models.User, err error) {
+	query := `select * from users where id=$1`
+	row := p.db.QueryRow(ctx, query, id)
+	if err := row.Scan(&user.ID, &user.Email, &user.Password); err != nil {
+		return models.User{}, fmt.Errorf("scan failed in getUserByID:%s", err)
 	}
 	return user, nil
 }
