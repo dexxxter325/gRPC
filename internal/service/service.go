@@ -1,6 +1,7 @@
 package service
 
 import (
+	"GRPC/internal/config"
 	"GRPC/internal/domain/models"
 	"GRPC/internal/storage"
 	"context"
@@ -12,9 +13,9 @@ type Service struct {
 	Investment
 }
 
-func NewService(storage *storage.Storage, logger *logrus.Logger) *Service {
+func NewService(storage *storage.Storage, logger *logrus.Logger, cfg *config.Config) *Service {
 	return &Service{
-		Auth:       NewAuthService(storage.User, logger),
+		Auth:       NewAuthService(storage.User, logger, cfg),
 		Investment: NewInvestmentService(storage.Investment, logger),
 	}
 }

@@ -21,11 +21,19 @@ func GenerateNewAccessToken(user models.User, accessTokenTTL time.Duration, secr
 }
 
 func ParseAccessToken(accessToken string) (bool, error) {
+	//jwt.Parse()
 	panic("скорей всего будем юзать в middleware")
 }
 
-func GenerateNewRefreshToken() (refreshToken string, err error) {
-	panic("imppppp me")
+func GenerateNewRefreshToken(refreshTokenTTl time.Duration, secretKey string) (string, error) {
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	claims := refreshToken.Claims.(jwt.MapClaims)
+	claims["exp"] = time.Now().Add(refreshTokenTTl).Unix()
+	refreshTokenString, err := refreshToken.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", fmt.Errorf("convert refresh token to string failed:%s", err)
+	}
+	return refreshTokenString, nil
 }
 
 func ParseRefreshToken(refreshToken string) (bool, error) {

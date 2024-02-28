@@ -24,7 +24,7 @@ func main() {
 
 	db, err := postgres.ConnToPostgres(cfg)
 	storages := storage.NewStorage(db)
-	services := service.NewService(storages, logger)
+	services := service.NewService(storages, logger, cfg)
 	handlers := handler.NewHandler(services)
 
 	server := grpc.NewServer()

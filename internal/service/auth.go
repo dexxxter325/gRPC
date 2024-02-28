@@ -1,27 +1,23 @@
 package service
 
 import (
+	"GRPC/internal/config"
 	"GRPC/internal/storage"
 	"context"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"os"
 	"time"
 )
 
 type AuthService struct {
 	storage storage.User
 	logger  *logrus.Logger
+	cfg     *config.Config
 }
 
-func NewAuthService(storage storage.User, logger *logrus.Logger) *AuthService {
-	return &AuthService{storage: storage, logger: logger}
+func NewAuthService(storage storage.User, logger *logrus.Logger, config *config.Config) *AuthService {
+	return &AuthService{storage: storage, logger: logger, cfg: config}
 }
-
-const (
-	accessTokenTTL  = 24 * 30 * time.Hour //1 month
-	refreshTokenTTL = 24 * 30 * time.Hour
-)
 
 func (s *AuthService) Register(ctx context.Context, email, password string) (userId int64, err error) {
 	log := s.logger.WithFields(logrus.Fields{
@@ -62,13 +58,28 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (access
 		log.Error("password wrong")
 		return "", "", err
 	}
-	secretKey := os.Getenv("SECRETKEY")
+
+	secretKey := s.cfg.AUTH.SecretKey
+
+	accessTokenTTLStr := s.cfg.AUTH.AccessTokenTTl
+	accessTokenTTL, err := time.ParseDuration(accessTokenTTLStr)
+	if err != nil {
+		log.Error("convert accessTokenTTL to type time failed")
+		return "", "", err
+	}
 	accessToken, err = GenerateNewAccessToken(user, accessTokenTTL, secretKey)
 	if err != nil {
 		log.Errorf("failed in GenerateNewAccessToken:%s", err)
 		return "", "", err
 	}
-	refreshToken, err = GenerateNewRefreshToken()
+
+	refreshTokenTTLStr := s.cfg.AUTH.RefreshTokenTTl
+	refreshTokenTTL, err := time.ParseDuration(refreshTokenTTLStr)
+	if err != nil {
+		log.Error("convert refreshTokenTTL to type time failed")
+		return "", "", err
+	}
+	refreshToken, err = GenerateNewRefreshToken(refreshTokenTTL, secretKey)
 	if err != nil {
 		log.Errorf("failed in GenerateNewRefreshToken:%s", err)
 		return "", "", err
