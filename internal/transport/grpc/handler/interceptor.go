@@ -48,3 +48,5 @@ func UnaryInterceptor(cfg *config.Config) grpc.UnaryServerInterceptor {
 		return handler(ctx, req)
 	}
 }
+
+/*настроить ci/cd,покрыть функц.тестами,мб из main  перенести в internal/app .shutdown*/
