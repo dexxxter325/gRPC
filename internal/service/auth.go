@@ -34,7 +34,7 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (use
 
 	userId, err = s.storage.SaveUser(ctx, email, hashPassword)
 	if err != nil {
-		log.Error("failed to saveUser")
+		log.Errorf("failed to saveUser:%s", err)
 		return 0, err
 	}
 

@@ -1,4 +1,6 @@
 .idea
 .bin
 .env
-config/config.yml
+config/local.yml
+config/local_tests.yml
+Makefile

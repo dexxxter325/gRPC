@@ -12,14 +12,13 @@ func (s *AuthServer) Register(ctx context.Context, req *gen.RegisterRequest) (*g
 		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
 	if req.GetPassword() == "" {
-		return nil, status.Error(codes.InvalidArgument, "password in required")
+		return nil, status.Error(codes.InvalidArgument, "password is required")
 	}
 	userId, err := s.handler.service.Register(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Register failed in handler:%s", err)
 	}
 	return &gen.RegisterResponse{UserId: userId}, nil
-
 }
 
 func (s *AuthServer) Login(ctx context.Context, req *gen.LoginRequest) (*gen.LoginResponse, error) {

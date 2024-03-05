@@ -21,7 +21,7 @@ type DB struct {
 
 type Postgres struct {
 	Host     string
-	Port     int
+	Port     string
 	User     string
 	DbName   string
 	Password string
@@ -35,10 +35,14 @@ type AUTH struct {
 }
 
 func Init() (*Config, error) {
+	return InitByPath("config/local.yml")
+}
+
+func InitByPath(configPath string) (*Config, error) {
 	var cfg Config
 
-	// Указываем имя файла конфигурации
-	viper.SetConfigFile("config/config.yml")
+	// Указываем путь к файлу конфигурации
+	viper.SetConfigFile(configPath)
 
 	// Читаем конфигурационный файл
 	if err := viper.ReadInConfig(); err != nil {
@@ -53,7 +57,7 @@ func Init() (*Config, error) {
 		DB: DB{
 			Postgres: Postgres{
 				Host:     viper.GetString("db.postgres.host"),
-				Port:     viper.GetInt("db.postgres.port"),
+				Port:     viper.GetString("db.postgres.port"),
 				User:     viper.GetString("db.postgres.user"),
 				DbName:   viper.GetString("db.postgres.dbName"),
 				Password: viper.GetString("db.postgres.password"),
