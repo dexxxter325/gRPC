@@ -89,7 +89,7 @@ func createPostgresContainer(ctx context.Context) (string, error) {
 		postgres.WithPassword("qwerty"),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+				WithOccurrence(2).WithStartupTimeout(7*time.Second)),
 	)
 	if err != nil {
 		return "", fmt.Errorf("run Container failed:%s\n", err)
