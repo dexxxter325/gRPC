@@ -84,7 +84,6 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (access
 		log.Errorf("failed in GenerateNewRefreshToken:%s", err)
 		return "", "", err
 	}
-
 	log.Info("user logged in")
 	return accessToken, refreshToken, nil
 }
@@ -130,7 +129,6 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (Ne
 		log.Errorf("generateNewTokenPair failed:%s", err)
 		return "", "", err
 	}
-
 	log.Info("tokens generated")
 	return NewAccessToken, NewRefreshToken, err
 }

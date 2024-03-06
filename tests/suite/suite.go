@@ -38,7 +38,7 @@ type Suite struct {
 
 func New(t *testing.T) (context.Context, *Suite, error) {
 	t.Parallel()
-	t.Helper()
+	t.Helper() //ошибка будет лучше отображена в отладке
 	ctx := context.Background()
 	port, err := createPostgresContainer(ctx)
 	if err != nil {

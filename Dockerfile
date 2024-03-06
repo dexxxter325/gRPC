@@ -7,7 +7,7 @@ COPY ./ /GRPC
 WORKDIR /GRPC
 
 RUN go mod download
-RUN go build -o GRPC ./cmd/grpc/main.go
+RUN go build -o GRPC ./cmd/app/main.go
 
 EXPOSE 8000
 
