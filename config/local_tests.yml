@@ -1,0 +1,14 @@
+grpc:
+  port: 8033
+db:
+  postgres:
+    host: localhost
+    port: 54416
+    user: postgres
+    dbName: testdb
+    password: qwerty
+    sslmode: disable
+auth:
+  secretKey: testKey
+  refreshTokenTTl: 1h
+  accessTokenTTl: 1h

@@ -2,5 +2,4 @@
 .bin
 .env
 config/local.yml
-config/local_tests.yml
 Makefile
