@@ -7,8 +7,8 @@ services:
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
-      - db
-  db:
+      - postgres
+  postgres:
     volumes:
       - C:/Users/prsok/volumes/databases/postgresql/grpc:/var/lib/postgresql/data
     image:
@@ -17,6 +17,33 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
     - "5430:5432"
+    depends_on:
+      - metrics
+
+  metrics:
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - prometheus
+
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+        - C:/Program Files/Prometheus/Prometheus Exporter/prometheus-2.45.3.windows-amd64/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres-exporter
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    ports:
+      - "9187:9187"
+
 
 
 

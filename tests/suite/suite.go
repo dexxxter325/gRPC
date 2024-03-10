@@ -51,6 +51,9 @@ func New(t *testing.T) (context.Context, *Suite, error) {
 	if err = updateGRPCPortInConfig(); err != nil {
 		t.Fatalf("update GRPCPort failed:%s", err)
 	}
+	if err = updateMetricsPortInConfig(); err != nil {
+		t.Fatalf("update MetricsPort failed:%s", err)
+	}
 
 	logger := logrus.New()
 	logrus.SetLevel(logrus.DebugLevel)
@@ -89,7 +92,7 @@ func createPostgresContainer(ctx context.Context) (string, error) {
 		postgres.WithPassword("qwerty"),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).WithStartupTimeout(7*time.Second)),
+				WithOccurrence(2).WithStartupTimeout(20*time.Second)),
 	)
 	if err != nil {
 		return "", fmt.Errorf("run Container failed:%s\n", err)
@@ -168,7 +171,7 @@ func updateGRPCPortInConfig() error {
 		return err
 	}
 
-	randGRPCPortInt := rand.Intn(8081-8000) + 8000
+	randGRPCPortInt := rand.Intn(8079-8000) + 8000
 	randGRPCPort := strconv.Itoa(randGRPCPortInt)
 
 	data, err := os.ReadFile("../config/local_tests.yml")
@@ -177,6 +180,29 @@ func updateGRPCPortInConfig() error {
 	}
 
 	updatedGRPCPort := strings.Replace(string(data), cfg.GRPC.Port, randGRPCPort, 1)
+
+	err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func updateMetricsPortInConfig() error {
+	cfg, err := config.InitByPath("../config/local_tests.yml")
+	if err != nil {
+		return err
+	}
+
+	randGRPCPortInt := rand.Intn(8120-8081) + 8081
+	randGRPCPort := strconv.Itoa(randGRPCPortInt)
+
+	data, err := os.ReadFile("../config/local_tests.yml")
+	if err != nil {
+		return err
+	}
+
+	updatedGRPCPort := strings.Replace(string(data), cfg.Metrics.Port, randGRPCPort, 1)
 
 	err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
 	if err != nil {

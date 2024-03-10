@@ -3,6 +3,7 @@ package app
 import (
 	"GRPC/gen"
 	"GRPC/internal/config"
+	"GRPC/internal/metrics"
 	"GRPC/internal/service"
 	"GRPC/internal/storage"
 	"GRPC/internal/storage/postgres"
@@ -34,6 +35,9 @@ func Run(logger *logrus.Logger, cfg *config.Config) {
 	authRegistrar := handler.NewAuthServer(handlers)
 	gen.RegisterAuthServer(server, authRegistrar)
 
+	if err = metrics.CreateMetrics(cfg.Metrics.Port, logger); err != nil {
+		logger.Fatalf("create metrics failed:%s", err)
+	}
 	//запускаем сервер в параллельно ,чтобы дальше в коде ждать от нее сигнала.Если бы запускали без горутины(не параллельно),то код не пошел бы дальше и мы не получили опр.сигналов
 	go func() {
 		listener, err := net.Listen("tcp", ":"+cfg.GRPC.Port)

@@ -1,9 +1,11 @@
 grpc:
-  port: 8017
+  port: 8041
+metrics:
+  port: 8095
 db:
   postgres:
     host: localhost
-    port: 55206
+    port: 56582
     user: postgres
     dbName: testdb
     password: qwerty
