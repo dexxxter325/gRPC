@@ -20,7 +20,7 @@ import (
 
 func Run(logger *logrus.Logger, cfg *config.Config) {
 
-	shutDownTraces, err := traces.InitTraces("http://172.17.0.1:14268/api/traces", "grpc_service") //Docker host
+	shutDownTraces, err := traces.InitTraces("http://172.17.0.1:14268/api/traces", "grpc_service") //D0cker host
 	if err != nil {
 		logger.Fatalf("Init Jaeger failed:%s", err)
 	}
