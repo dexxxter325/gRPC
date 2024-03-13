@@ -20,7 +20,7 @@ import (
 
 func Run(logger *logrus.Logger, cfg *config.Config) {
 
-	shutDownTraces, err := traces.InitTraces("http://localhost:14268/api/traces", "grpc_service")
+	shutDownTraces, err := traces.InitTraces("http://172.17.0.1:14268/api/traces", "grpc_service") //Docker host
 	if err != nil {
 		logger.Fatalf("Init Jaeger failed:%s", err)
 	}
@@ -29,15 +29,23 @@ func Run(logger *logrus.Logger, cfg *config.Config) {
 		logger.Info("traces stopped.")
 	}()
 
-	if err = metrics.InitMetrics(cfg.Metrics.Port, logger); err != nil {
+	shutDownMetrics, err := metrics.InitMetrics(cfg.Metrics.Port, logger)
+	if err != nil {
 		logger.Fatalf("create metrics failed:%s", err)
 	}
+	defer func() {
+		shutDownMetrics()
+		logger.Info("metrics stopped")
+	}()
 
 	db, err := postgres.ConnToPostgres(cfg)
 	if err != nil {
 		logger.Fatalf("connect to postgres failed:%s", err)
 	}
-	defer db.Close() //для избежания утечки рес-ов
+	defer func() {
+		db.Close() //для избежания утечки рес-ов
+		logger.Info("Postgres Connection closed")
+	}()
 
 	storages := storage.NewStorage(db)
 	services := service.NewService(storages, logger, cfg)

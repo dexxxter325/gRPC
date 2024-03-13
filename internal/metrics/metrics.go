@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"context"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 
 var isHandlerRegistered bool //default-false
 
-func InitMetrics(port string, logger *logrus.Logger) error {
+func InitMetrics(port string, logger *logrus.Logger) (func(), error) {
 
 	if !isHandlerRegistered { //не можем юзать 1 хэндлер неск.раз
 		http.Handle("/metrics", promhttp.Handler()) //promhttp.Handler-сборщик дкфолтных метриков для prometheus
@@ -26,7 +27,13 @@ func InitMetrics(port string, logger *logrus.Logger) error {
 		}
 	}()
 
-	return nil
+	shutdownFunc := func() {
+		if err := srv.Shutdown(context.Background()); err != nil {
+			logrus.Errorf("Error shutting down metrics: %s", err)
+		}
+	}
+
+	return shutdownFunc, nil
 }
 
 /*type Metrics struct {
