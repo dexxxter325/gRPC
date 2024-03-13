@@ -70,7 +70,7 @@ func New(t *testing.T) (context.Context, *Suite, error) {
 
 	time.Sleep(time.Second * 1) //for stop
 
-	cc, err := grpc.DialContext(ctx, net.JoinHostPort("localhost", cfg.GRPC.Port), grpc.WithTransportCredentials(insecure.NewCredentials())) //небезопасное соед.для тестов
+	cc, err := grpc.DialContext(ctx, net.JoinHostPort("localhost", cfg.GRPC.Port), grpc.WithTransportCredentials(insecure.NewCredentials())) //небeзопасное соед.для тестов
 	if err != nil {
 		return nil, nil, fmt.Errorf("create client failed:%s", err)
 	}
