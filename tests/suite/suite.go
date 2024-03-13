@@ -170,22 +170,25 @@ func updateGRPCPortInConfig() error {
 	if err != nil {
 		return err
 	}
+	for {
 
-	randGRPCPortInt := rand.Intn(8079-8000) + 8000
-	randGRPCPort := strconv.Itoa(randGRPCPortInt)
+		randGRPCPortInt := rand.Intn(8079-8000) + 8000
+		randGRPCPort := strconv.Itoa(randGRPCPortInt)
 
-	data, err := os.ReadFile("../config/local_tests.yml")
-	if err != nil {
-		return err
+		if !isPortInUse(randGRPCPort) {
+			data, err := os.ReadFile("../config/local_tests.yml")
+			if err != nil {
+				return err
+			}
+
+			updatedGRPCPort := strings.Replace(string(data), cfg.GRPC.Port, randGRPCPort, 1)
+
+			if err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644); err != nil {
+				return err
+			}
+			return nil
+		}
 	}
-
-	updatedGRPCPort := strings.Replace(string(data), cfg.GRPC.Port, randGRPCPort, 1)
-
-	err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func updateMetricsPortInConfig() error {
@@ -194,19 +197,33 @@ func updateMetricsPortInConfig() error {
 		return err
 	}
 
-	randGRPCPortInt := rand.Intn(8120-8081) + 8081
-	randGRPCPort := strconv.Itoa(randGRPCPortInt)
+	for {
+		randMetricsPortInt := rand.Intn(8120-8081) + 8081
+		randMetricsPort := strconv.Itoa(randMetricsPortInt)
 
-	data, err := os.ReadFile("../config/local_tests.yml")
-	if err != nil {
-		return err
+		if !isPortInUse(randMetricsPort) {
+			data, err := os.ReadFile("../config/local_tests.yml")
+			if err != nil {
+				return err
+			}
+
+			updatedGRPCPort := strings.Replace(string(data), cfg.Metrics.Port, randMetricsPort, 1)
+
+			err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
 	}
+}
 
-	updatedGRPCPort := strings.Replace(string(data), cfg.Metrics.Port, randGRPCPort, 1)
-
-	err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
+func isPortInUse(port string) bool {
+	conn, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		return err
+		return true
 	}
-	return nil
+	defer conn.Close()
+	return false
 }
