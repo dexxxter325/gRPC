@@ -17,7 +17,6 @@ StreamInterceptor-когда данные передаются как поток
 exml:приложение чата,где клиент и сервер могут передавать сообщения в реальном времени.StreamInterceptor поможет добавить логику проверки сообщений в реальном времени*/
 
 func UnaryInterceptor(cfg *config.Config) grpc.UnaryServerInterceptor {
-	// Возвращаем функцию-перехватчик
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if info.FullMethod != "/Auth/Register" && info.FullMethod != "/Auth/Login" && info.FullMethod != "/Auth/RefreshToken" {
 			authCtx, ok := metadata.FromIncomingContext(ctx)

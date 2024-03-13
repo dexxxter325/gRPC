@@ -8,10 +8,10 @@ import (
 
 var isHandlerRegistered bool //default-false
 
-func CreateMetrics(port string, logger *logrus.Logger) error {
+func InitMetrics(port string, logger *logrus.Logger) error {
 
 	if !isHandlerRegistered { //не можем юзать 1 хэндлер неск.раз
-		http.Handle("/metrics", promhttp.Handler())
+		http.Handle("/metrics", promhttp.Handler()) //promhttp.Handler-сборщик дкфолтных метриков для prometheus
 		isHandlerRegistered = true
 	}
 

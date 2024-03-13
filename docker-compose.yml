@@ -8,6 +8,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       - postgres
+
   postgres:
     volumes:
       - C:/Users/prsok/volumes/databases/postgresql/grpc:/var/lib/postgresql/data
@@ -27,11 +28,10 @@ services:
     depends_on:
       - prometheus
 
-
   prometheus:
     image: prom/prometheus
     volumes:
-        - C:/Program Files/Prometheus/Prometheus Exporter/prometheus-2.45.3.windows-amd64/prometheus.yml:/etc/prometheus/prometheus.yml
+        - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
         - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
@@ -43,6 +43,26 @@ services:
     image: prometheuscommunity/postgres-exporter
     ports:
       - "9187:9187"
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    #environment:
+      #- COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      #- COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # query serve frontend (Jaeger UI)
+      - "14268:14268" # collector accept jaeger.thrift directly from clients
+      #- "5775:5775/udp" # agent accept zipkin.thrift over compact thrift protocol (deprecated, used by legacy clients only)
+      #- "6831:6831/udp" # agent accept jaeger.thrift over compact thrift protocol
+      #- "6832:6832/udp" # agent accept jaeger.thrift over binary thrift protocol
+      #- "5778:5778" # agent serve configs
+      #- "14250:14250" # collector accept model.proto
+      #- "9411:9411" # collector Zipkin compatible endpoint (optional)
+      #- "4317:4317" # OTLP collector grpc
+      #- "4318:4318" # OTLP collector http
 
 
 
