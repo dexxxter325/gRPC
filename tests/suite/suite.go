@@ -54,6 +54,9 @@ func New(t *testing.T) (context.Context, *Suite, error) {
 	if err = updateMetricsPortInConfig(); err != nil {
 		t.Fatalf("update MetricsPort failed:%s", err)
 	}
+	if err = updateGrpcGatewayPortInConfig(); err != nil {
+		t.Fatalf("update MetricsPort failed:%s", err)
+	}
 
 	logger := logrus.New()
 	logrus.SetLevel(logrus.DebugLevel)
@@ -64,10 +67,11 @@ func New(t *testing.T) (context.Context, *Suite, error) {
 		logger.Fatalf("init config failed:%s", err)
 	}
 
-	go func() {
-		app.Run(logger, cfg)
-	}()
+	app.RunGrpcGateway(logger, cfg)
 
+	go func() {
+		app.RunGRPC(logger, cfg)
+	}()
 	time.Sleep(time.Second * 1) //for stop
 
 	cc, err := grpc.DialContext(ctx, net.JoinHostPort("localhost", cfg.GRPC.Port), grpc.WithTransportCredentials(insecure.NewCredentials())) //небeзопасное соед.для тестов
@@ -171,8 +175,7 @@ func updateGRPCPortInConfig() error {
 		return err
 	}
 	for {
-
-		randGRPCPortInt := rand.Intn(8079-8000) + 8000
+		randGRPCPortInt := rand.Intn(8079-8002) + 8002
 		randGRPCPort := strconv.Itoa(randGRPCPortInt)
 
 		if !isPortInUse(randGRPCPort) {
@@ -196,7 +199,6 @@ func updateMetricsPortInConfig() error {
 	if err != nil {
 		return err
 	}
-
 	for {
 		randMetricsPortInt := rand.Intn(8120-8081) + 8081
 		randMetricsPort := strconv.Itoa(randMetricsPortInt)
@@ -208,6 +210,33 @@ func updateMetricsPortInConfig() error {
 			}
 
 			updatedGRPCPort := strings.Replace(string(data), cfg.Metrics.Port, randMetricsPort, 1)
+
+			err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+	}
+}
+
+func updateGrpcGatewayPortInConfig() error {
+	cfg, err := config.InitByPath("../config/local_tests.yml")
+	if err != nil {
+		return err
+	}
+	for {
+		randMetricsPortInt := rand.Intn(8160-8121) + 8121
+		randMetricsPort := strconv.Itoa(randMetricsPortInt)
+
+		if !isPortInUse(randMetricsPort) {
+			data, err := os.ReadFile("../config/local_tests.yml")
+			if err != nil {
+				return err
+			}
+
+			updatedGRPCPort := strings.Replace(string(data), cfg.GrpcGateway.Port, randMetricsPort, 1)
 
 			err = os.WriteFile("../config/local_tests.yml", []byte(updatedGRPCPort), 0644)
 			if err != nil {

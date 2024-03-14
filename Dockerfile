@@ -10,7 +10,9 @@ RUN go mod download
 RUN go build -o GRPC ./cmd/app/main.go
 
 EXPOSE 8000
-
+EXPOSE 8001
 EXPOSE 8080
+EXPOSE 9090
+EXPOSE 9187
 
 CMD ["./GRPC"]

@@ -9,16 +9,20 @@ import (
 	"GRPC/internal/storage/postgres"
 	"GRPC/internal/traces"
 	"GRPC/internal/transport/grpc/handler"
+	"context"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-func Run(logger *logrus.Logger, cfg *config.Config) {
+func RunGRPC(logger *logrus.Logger, cfg *config.Config) {
 
 	shutDownTraces, err := traces.InitTraces("http://172.17.0.1:14268/api/traces", "grpc_service") //D0cker host
 	if err != nil {
@@ -81,4 +85,36 @@ func Run(logger *logrus.Logger, cfg *config.Config) {
 	server.GracefulStop() //1)Остановка приема новых запросов.2)ожидает завершения обработки всех текущих запросов.3)стопает сервер
 
 	logger.Info("application stopped")
+}
+
+func RunGrpcGateway(logger *logrus.Logger, cfg *config.Config) {
+	// Register gRPC server endpoint
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	if err := gen.RegisterInvestmentHandlerFromEndpoint(context.Background(), mux, "grpc:"+cfg.GRPC.Port, opts); err != nil { ////docker host
+		logger.Fatalf("register GRPC gateway failed:%s", err)
+	}
+
+	if err := gen.RegisterAuthHandlerFromEndpoint(context.Background(), mux, "grpc:"+cfg.GRPC.Port, opts); err != nil {
+		logger.Fatalf("register GRPC gateway failed:%s", err)
+	}
+
+	// Start HTTP server (and proxy calls to gRPC server endpoint)
+	srv := &http.Server{
+		Addr:    ":" + cfg.GrpcGateway.Port,
+		Handler: mux,
+	}
+
+	go func() {
+		logger.Infof("GrpcGateway started on port:%s", cfg.GrpcGateway.Port)
+		if err := srv.ListenAndServe(); err != nil {
+			logger.Fatalf("run GrpcGateway failed:%s", err)
+		}
+	}()
+	/*defer func() {
+		if err = srv.Shutdown(context.Background()); err != nil {
+			logger.Fatalf("Error shutting down GrpcGateway:%s", err)
+		}
+	}()*/
 }

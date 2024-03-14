@@ -15,5 +15,6 @@ func main() {
 	if err != nil {
 		logger.Fatalf("init config failed:%s", err)
 	}
-	app.Run(logger, cfg)
+	app.RunGrpcGateway(logger, cfg)
+	app.RunGRPC(logger, cfg)
 }

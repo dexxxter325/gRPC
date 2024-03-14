@@ -6,13 +6,18 @@ import (
 )
 
 type Config struct {
-	GRPC    GRPC
-	Metrics Metrics
-	DB      DB
-	AUTH    AUTH
+	GRPC        GRPC
+	GrpcGateway GrpcGateway
+	Metrics     Metrics
+	DB          DB
+	AUTH        AUTH
 }
 
 type GRPC struct {
+	Port string
+}
+
+type GrpcGateway struct {
 	Port string
 }
 
@@ -58,6 +63,9 @@ func InitByPath(configPath string) (*Config, error) {
 	cfg = Config{
 		GRPC: GRPC{
 			Port: viper.GetString("grpc.port"),
+		},
+		GrpcGateway: GrpcGateway{
+			Port: viper.GetString("grpcGateway.port"),
 		},
 		Metrics: Metrics{
 			Port: viper.GetString("metrics.port"),
